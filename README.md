@@ -6,7 +6,13 @@ This repository hosts StackOverflow User data imported into a convenient SQLite 
 
 # Usage
 
-Download so_users.db (1.94GB) and it can be used with `sqlite3` command line tool or any other SQLite database management tool.  The schema is as follows:
+Download `so_users.7z.*` [7zip](https://www.7-zip.org/) archive split files from this repository into a folder and extract `so_users.db` from them using the following command:
+
+```
+7za.exe e so_users.7z.001
+```
+
+`so_users.db` (1.94GB) can then be used with `sqlite3` command line tool or any other SQLite database management tool.  The schema is as follows:
 
 ```sql
 CREATE TABLE so_users (Id integer primary key, DisplayName varchar, 
@@ -18,7 +24,7 @@ CREATE INDEX so_users_name on so_users (DisplayName);
 CREATE INDEX so_users_loc on so_users (Location);
 ```
 
-The records can be accessed using User Id, DisplayName or Location.
+The records can be quickly accessed using User Id, DisplayName or Location through the existing indices.
 
 # Screenshots
 
