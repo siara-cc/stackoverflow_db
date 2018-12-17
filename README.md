@@ -26,6 +26,10 @@ CREATE INDEX so_users_loc on so_users (Location);
 
 The records can be quickly accessed using User Id, DisplayName or Location through the existing indices.
 
+# Scripts
+
+The scripts used for importing the snapshots into database have also been provided here (ParseSOData.java and ins_xml_data_into_db.sh).
+
 # Screenshots
 
 ![Screen shot 1](scrshot1.png?raw=true)
