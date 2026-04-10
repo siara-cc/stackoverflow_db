@@ -34,33 +34,48 @@ public class ParseSOData {
        + "Reputation, Views, UpVotes, DownVotes, AccountId, "
        + "CreationDate, LastAccessDate, WebsiteUrl, AboutMe) "
        + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    Statement stmt = c.createStatement();
+    stmt.execute("PRAGMA journal_mode = OFF;");
+    stmt.execute("PRAGMA synchronous = OFF;");
+    stmt.execute("PRAGMA temp_store = MEMORY;");
+    stmt.execute("PRAGMA cache_size = 1000000;");
+
+    c.setAutoCommit(false);
     PreparedStatement st = c.prepareStatement(sql);
     BufferedReader fr = new BufferedReader(new InputStreamReader(System.in));
-    String s = fr.readLine();
+
+    String s;
     int rows = 0;
-    while (s != null) {
-      s = fr.readLine();
-      if (s == null)
-         break;
-      if (!s.startsWith("  <row "))
-        continue;
-      st.setInt(1, parseIntColumn(s, "Id"));
-      st.setString(2, parseStringColumn(s, "DisplayName"));
-      st.setString(3, parseStringColumn(s, "Location"));
-      st.setInt(4, parseIntColumn(s, "Reputation"));
-      st.setInt(5, parseIntColumn(s, "Views"));
-      st.setInt(6, parseIntColumn(s, "UpVotes"));
-      st.setInt(7, parseIntColumn(s, "DownVotes"));
-      st.setInt(8, parseIntColumn(s, "AccountId"));
-      st.setString(9, parseStringColumn(s, "CreationDate"));
-      st.setString(10, parseStringColumn(s, "LastAccessDate"));
-      st.setString(11, parseStringColumn(s, "WebsiteUrl"));
-      st.setString(12, parseStringColumn(s, "AboutMe"));
-      st.executeUpdate();
-      if (rows++ % 10000 == 0) {
-         System.out.print(".");
-      }
+
+    while ((s = fr.readLine()) != null) {
+        if (!s.startsWith("  <row "))
+            continue;
+
+        st.setInt(1, parseIntColumn(s, "Id"));
+        st.setString(2, parseStringColumn(s, "DisplayName"));
+        st.setString(3, parseStringColumn(s, "Location"));
+        st.setInt(4, parseIntColumn(s, "Reputation"));
+        st.setInt(5, parseIntColumn(s, "Views"));
+        st.setInt(6, parseIntColumn(s, "UpVotes"));
+        st.setInt(7, parseIntColumn(s, "DownVotes"));
+        st.setInt(8, parseIntColumn(s, "AccountId"));
+        st.setString(9, parseStringColumn(s, "CreationDate"));
+        st.setString(10, parseStringColumn(s, "LastAccessDate"));
+        st.setString(11, parseStringColumn(s, "WebsiteUrl"));
+        st.setString(12, parseStringColumn(s, "AboutMe"));
+
+        st.addBatch();
+
+        if (++rows % 10000 == 0) {
+            st.executeBatch();
+            c.commit();
+            System.out.print(".");
+        }
     }
+    st.executeBatch(); // flush remaining
+    c.commit();
+    stmt.close();
+    fr.close();
     System.out.println();
     st.close();
     c.close();
